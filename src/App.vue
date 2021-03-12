@@ -1,148 +1,97 @@
 <template>
   <v-app id="app">
-    <v-app-bar
-      color="blue-grey"
-      dark
+    <Appbar
+      @toggle="toggleDrawer"
       app
-      dense
-    >
-      <v-app-bar-nav-icon @click="drawer = true" />
-
-      <v-toolbar-title>Logic Editor</v-toolbar-title>
-    </v-app-bar>
-
-    <v-navigation-drawer
-      v-model="drawer"
-      absolute
-      temporary
+    />
+    <v-app-bar-title>{{ ruleSet['name'] }}</v-app-bar-title>
+    <ActionsDrawer
+      :show="drawer"
+      @toggle="toggleDrawer"
+      @setRuleSet="setRuleSet"
       app
-    >
-      <v-list
-        nav
-        dense
-      >
-        <v-list-item-group
-          v-model="group"
-          active-class="blue-grey--text text--accent-4"
-        >
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-arrow-up-bold</v-icon>
-            </v-list-item-icon>
-            <v-dialog
-              persistent
-              transition="dialog-top-transition"
-              max-width="600"
-            >
-              <template #activator="{ on, attrs }">
-                <v-list-item-title
-                  color="primary"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  Upload
-                </v-list-item-title>
-              </template>
-              <template #default="dialog">
-                <v-card>
-                  <v-toolbar
-                    color="primary"
-                    dark
-                  >
-                    Please select a JSON File
-                  </v-toolbar>
-                  <v-card-text>
-                    <div class="text-h2 pa-12">
-                      <v-file-input
-                        accept="application/json"
-                        label="Select JSON File"
-                        @change="selectFile"
-                      />
-                    </div>
-                  </v-card-text>
-                  <v-card-actions class="justify-end">
-                    <v-btn
-                      text
-                      @click="openJson"
-                    >
-                      Import
-                    </v-btn>
-                    <v-btn
-                      text
-                      @click="dialog.value = false"
-                    >
-                      Close
-                    </v-btn>
-                  </v-card-actions>
-                  <v-alert
-                    :value="alert.opened"
-                    color="pink"
-                    dark
-                    border="top"
-                    icon="mdi-home"
-                    transition="scale-transition"
-                  >
-                    {{ alert.message }}
-                    <v-btn
-                      color="primary"
-                      @click="resetAlert"
-                    >
-                      Ok
-                    </v-btn>
-                  </v-alert>
-                </v-card>
-              </template>
-            </v-dialog>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-arrow-down-bold</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Export</v-list-item-title>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-      <template #activator="{ on, attrs }">
-        <v-btn
-          color="primary"
-          v-bind="attrs"
-          v-on="on"
-        >
-          Upload
-        </v-btn>
-      </template>
-    </v-navigation-drawer>
+    />
     <v-main v-if="isValid">
       <v-container
         padding="10px"
         light
       >
-        <v-row>{{ ruleSet['name'] }}</v-row>
-        <v-row
-          v-for="(value, key) in ruleSetKeys"
-          :key="key"
+        <v-tabs
+          v-model="tab"
+          align-with-title
+          grow
         >
-          <v-card
-            height="200"
-            width="80%"
-            cols="4"
+          <v-tabs-slider color="blue" />
+          <v-tab
+            v-for="(value, key) in ruleSetKeys"
+            :key="key"
           >
             {{ key }}
-          </v-card>
-        </v-row>
+          </v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="tab">
+          <v-tab-item
+            v-for="(value, key) in ruleSetKeys"
+            :key="key"
+          >
+            <v-container fluid>
+              <v-row
+                align="center"
+                v-for="val in value"
+                :key="val && val.name ? val.name : null"
+              >
+                <v-col
+                  cols="12"
+                  sm="6"
+                >
+                  <v-text-field
+                    label="Field Name"
+                    :value="val.name"
+                  />
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  v-for="predicateChoices in choices[key]"
+                  :key="predicateChoices ? predicateChoices.key+val.name : null"
+                >
+                  <v-select
+                    :items="predicateChoices ? predicateChoices.choices : null"
+                    :label="val.name"
+                    outlined
+                    :value="val.type"
+                    single-line
+                    hint="Select the Field Type"
+                    persistent-hint
+                  />
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-tab-item>
+        </v-tabs-items>
       </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
+import Appbar from '@/ui/components/Appbar';
+import ActionsDrawer from '@/ui/components/ActionsDrawer';
+import choices from '@/constants/choices';
+
 export default {
+	components: {
+	  Appbar,
+		ActionsDrawer,
+	},
 	data: () => ({
 		drawer: false,
 		group: null,
+		tab: null,
 		menus: [
 			{ Open: 'openJson' },
 		],
+		choices,
 		fileToImport: null,
 		ruleSet: {},
 		alert: {
@@ -157,43 +106,23 @@ export default {
 	    return Object.keys(ruleSet).length > 0;
 		},
 		ruleSetKeys() {
-			return Object.keys(this.ruleSet).filter(i => i !== 'name').reduce((a, c) => {
+	    console.log(Object.keys(this.ruleSet));
+			const res = Object.keys(this.ruleSet).filter(i => i !== 'name').reduce((a, c) => {
 				a[c] = this.ruleSet[c];
 				return a;
 			},
 			{});
+			console.log(res);
+			return res;
 		},
 	},
 	methods: {
-	  openJson() {
-			this.drawer = false;
-	    if (!this.fileToImport) {
-				return this.openAlert('Please make sure to upload a JSON file.');
-			}
-			const reader = new FileReader();
-			console.log('OpeningJSON', this.fileToImport);
-			const self = this;
-			reader.onload = () => {
-				self.ruleSet = JSON.parse(reader.result);
-			};
-			reader.readAsText(this.fileToImport);
-			this.resetAlert();
+		setRuleSet(ruleSet) {
+			this.ruleSet = JSON.parse(ruleSet);
+			console.log(ruleSet);
 		},
-		selectFile(file) {
-	    if (!file || file.type !== 'application/json') {
-				this.fileToImport = null;
-	      return this.openAlert('Please make sure to upload a JSON file.');
-			}
-	    this.resetAlert();
-			this.fileToImport = file;
-		},
-		openAlert(message) {
-			this.alert.opened = true;
-			this.alert.message = message || '';
-		},
-		resetAlert() {
-			this.alert.opened = false;
-			this.alert.message = '';
+		toggleDrawer() {
+			this.drawer = !this.drawer;
 		},
 	},
 };
