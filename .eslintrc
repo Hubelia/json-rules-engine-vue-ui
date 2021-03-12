@@ -1,0 +1,150 @@
+{
+  "extends": ["airbnb-base", "plugin:vue/strongly-recommended"],
+  "plugins": [
+    "import",
+    "unused-imports",
+    "jsdoc"
+  ],
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "parser": "babel-eslint",
+    "ecmaVersion": 8,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "browser": true,
+    "mongo": true,
+    "node": true,
+    "es6": true
+  },
+  "globals": {
+    "app": "writable",
+    "MongoInternals": "readonly",
+    "Package": true,
+    "Npm": true,
+    "Tracker": true
+  },
+  "rules": {
+    "vue/no-unused-vars": "warn",
+    "no-tabs": 0,
+    "import/extensions": ["warn", "always", {
+      "js": "never",
+      "mjs": "never",
+      "jsx": "never",
+      "ts": "never",
+      "tsx": "never",
+      "vue": "never",
+      "alias": {
+        "map": [
+          [
+            "@",
+            "./src"
+          ]
+          //default @ -> ./src alias in Vue, it exists even if vue.config.js is not present
+          /*
+          *... add your own webpack aliases if you have them in vue.config.js/other webpack config file
+          * if you forget to add them, eslint-plugin-import will not throw linting error in .vue imports that contain the webpack alias you forgot to add
+          */
+        ],
+        "extensions": [
+          ".vue",
+          ".json",
+          ".js"
+        ]
+      }
+    }],
+    "indent": [
+      2,
+      "tab",
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "max-len": [
+      2,
+      140
+    ],
+    "unused-imports/no-unused-imports": "warn",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      { "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }
+    ],
+    "prefer-const": 0,
+    "no-var": 1,
+    "no-lonely-if": 0,
+    "func-style": [
+      "warn",
+      "expression",
+      {
+        "allowArrowFunctions": true
+      }
+    ],
+    "no-mixed-spaces-and-tabs": ["warn"],
+    "func-names": "off",
+    "import/no-extraneous-dependencies": "warn",
+    "import/unambiguous": "off",
+    "no-nested-ternary": "off",
+    "no-console": [
+      "warn",
+      {
+        "allow": [
+          "warn",
+          "error"
+        ]
+      }
+    ],
+    "no-underscore-dangle": "off",
+    "no-param-reassign": "off",
+    "no-undef": "warn",
+    "radix": [
+      "warn",
+      "as-needed"
+    ],
+    "consistent-return": "warn",
+    "import/no-cycle": "off",
+    "no-trailing-spaces": ["warn", { "ignoreComments": true }],
+    "require-jsdoc": [
+      "warn",
+      {
+        "require": {
+          "FunctionDeclaration": true,
+          "MethodDefinition": true,
+          "ClassDeclaration": true,
+          "ArrowFunctionExpression": true,
+          "FunctionExpression": true
+        }
+      }
+    ],
+
+    //jsDoc
+    "jsdoc/check-alignment": 1, // Recommended
+    "jsdoc/check-examples": 0,
+    "jsdoc/check-indentation": 0,
+    "jsdoc/check-param-names": 1, // Recommended
+    "jsdoc/check-syntax": 0,
+    "jsdoc/check-tag-names": 1, // Recommended
+    "jsdoc/check-types": 1, // Recommended
+    "jsdoc/implements-on-classes": 1, // Recommended
+    "jsdoc/match-description": 0,
+    "jsdoc/newline-after-description": 0, // Recommended
+    "jsdoc/no-types": 0,
+    "jsdoc/no-undefined-types": 1, // Recommended
+    "jsdoc/require-description": 1,
+    "jsdoc/require-description-complete-sentence": 0,
+    "jsdoc/require-example": 0,
+    "jsdoc/require-hyphen-before-param-description": 0,
+    "jsdoc/require-jsdoc": 1, // Recommended
+    "jsdoc/require-param": 1, // Recommended
+    "jsdoc/require-param-description": 1, // Recommended
+    "jsdoc/require-param-name": 1, // Recommended
+    "jsdoc/require-param-type": 1, // Recommended
+    "jsdoc/require-returns": 1, // Recommended
+    "jsdoc/require-returns-check": 1, // Recommended
+    "jsdoc/require-returns-description": 0, // Recommended
+    "jsdoc/require-returns-type": 1, // Recommended
+    "jsdoc/valid-types": 1 // Recommended
+  }
+}
