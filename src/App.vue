@@ -93,7 +93,34 @@ export default {
 		],
 		choices,
 		fileToImport: null,
-		ruleSet: {},
+		ruleSet: {
+			name: 'test',
+			attributes: [
+				{
+					name: 'TEst',
+					type: 'number',
+				},
+			],
+			decisions: [
+				{
+					conditions: {
+						all: [
+							{
+								fact: 'TEst',
+								operator: 'equal',
+								value: 2,
+							},
+						],
+					},
+					event: {
+						type: 'IsFine',
+						params: {
+							'': '',
+						},
+					},
+				},
+			],
+		},
 		alert: {
 		  message: '',
 			opened: false,
